@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+
+import argparse
+import re
+
+
+class Styles:
+    CLEAR = '\033[0m'
+    HIT   = '\033[1;33;46m'
+
+
+def please_input():
+    print('Enter the string you want to test.')
+    print('Type two new lines to finish your input.')
+    print('-' * 30)
+    data = []
+    newline_count = 0
+    while newline_count < 2:
+        user_input = input()
+        if user_input == '':
+            newline_count += 1
+        else:
+            data.extend(['' for _ in range(newline_count)])
+            newline_count = 0
+            data.append(user_input)
+    return '\n'.join(data)
+
+
+def interactive_test(sample_data):
+    while True:
+        try:
+            matches = re.finditer(input('Expression?: '), sample_data)
+            i = 0
+            result = ''
+            for m in matches:
+                (start, stop) = m.span()
+                result += sample_data[i:start]
+                result += Styles.HIT
+                result += sample_data[start:stop]
+                result += Styles.CLEAR
+                i = stop
+            result += sample_data[i:]
+            print(result)
+        except (KeyboardInterrupt, EOFError):
+            print('')
+            break
+
+
+def get_parser():
+    parser = argparse.ArgumentParser(description='Regular expression test tool.')
+    parser.add_argument('FILE', type=argparse.FileType('r'), nargs='?')
+    return parser
+
+
+if __name__ == '__main__':
+    parser = get_parser()
+    args = parser.parse_args()
+    sample_data = please_input() if args.FILE is None else args.FILE.read()
+    print('Press Ctrl-C to exit.')
+    interactive_test(sample_data)
