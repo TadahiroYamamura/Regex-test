@@ -45,7 +45,7 @@ def interactive_test(sample_data, flags):
                 result += Styles.CLEAR
                 i = stop
             result += sample_data[i:]
-            print(result)
+            print(result, end='\n\n')
         except (KeyboardInterrupt, EOFError):
             print('')
             break
